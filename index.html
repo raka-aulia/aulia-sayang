@@ -14,6 +14,7 @@ body {
   text-align: center;
   color: white;
   overflow-x: hidden;
+  background: black;
 }
 
 /* OPENING */
@@ -44,6 +45,19 @@ body {
   pointer-events: none;
   background-size: cover;
   background-position: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+/* BACKGROUND GELAP */
+.page::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 0;
 }
 
 .page.active {
@@ -52,6 +66,8 @@ body {
   filter: blur(0);
   pointer-events: auto;
 }
+
+.page > * { z-index: 2; }
 
 h1, p {
   opacity: 0;
@@ -63,22 +79,54 @@ h1, p {
   to { opacity: 1; transform: translateY(0); }
 }
 
+/* PETUNJUK (HINT) */
+.hint {
+  font-size: 0.85rem;
+  font-style: italic;
+  color: rgba(255, 255, 255, 0.8);
+  margin-top: -10px;
+  margin-bottom: 15px;
+  animation: hintPulse 2s infinite ease-in-out;
+}
+
+@keyframes hintPulse {
+  0%, 100% { opacity: 0.4; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.05); }
+}
+
+/* STORY BOX */
+.story-box {
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  padding: 20px;
+  border-radius: 15px;
+  max-width: 85%;
+  margin: 20px auto;
+}
+
+/* GALLERY */
 .gallery {
   display: flex;
   overflow-x: auto;
   gap: 16px;
   padding: 20px;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .gallery img {
   width: 220px;
-  height: 280px; /* bikin proporsi */
-  object-fit: cover; /* INI KUNCI */
+  height: 280px; 
+  object-fit: cover; 
   border-radius: 16px;
+  flex-shrink: 0;
+  transition: transform 0.3s ease;
 }
 
 .gallery img:active {
-  transform: scale(0.95);
+  transform: scale(0.9);
 }
 
 .gif { width: 90px; }
@@ -94,50 +142,33 @@ button {
   font-size: 14px;
   animation: pulse 2s infinite;
   box-shadow: 0 0 10px rgba(255,77,109,0.6);
+  cursor: pointer;
 }
 
 @keyframes pulse {
-  0% { transform: scale(1); box-shadow: 0 0 10px rgba(255,77,109,0.6); }
-  50% { transform: scale(1.08); box-shadow: 0 0 20px rgba(255,77,109,0.9); }
-  100% { transform: scale(1); box-shadow: 0 0 10px rgba(255,77,109,0.6); }
+  0% { transform: scale(1); }
+  50% { transform: scale(1.08); }
+  100% { transform: scale(1); }
 }
 
-/* MODAL CINEMATIC */
+/* MODAL */
 .modal {
   display: none;
   position: fixed;
   inset: 0;
-  background: rgba(0,0,0,0.75);
+  background: rgba(0,0,0,0.8);
   backdrop-filter: blur(12px);
   justify-content: center;
   align-items: center;
   flex-direction: column;
+  z-index: 10000;
   animation: fadeIn 0.4s;
 }
 
-.modal img {
-  max-width: 80%;
-  border-radius: 18px;
-  animation: zoomIn 0.4s;
-}
+.modal img { max-width: 80%; border-radius: 18px; animation: zoomIn 0.4s; }
+#modalText { margin-top: 15px; padding: 0 20px; font-style: italic; }
 
-@keyframes zoomIn {
-  from { transform: scale(0.6); opacity: 0; }
-  to { transform: scale(1); opacity: 1; }
-}
-
-.modal.hide {
-  animation: fadeOut 0.4s forwards;
-}
-
-.modal img.hide {
-  animation: zoomOut 0.4s forwards;
-}
-
-@keyframes zoomOut {
-  from { transform: scale(1); }
-  to { transform: scale(0.6); opacity: 0; }
-}
+@keyframes zoomIn { from { transform: scale(0.6); opacity: 0; } to { transform: scale(1); opacity: 1; } }
 
 /* DOT */
 #dots {
@@ -147,6 +178,7 @@ button {
   transform: translateX(-50%);
   display: flex;
   gap: 10px;
+  z-index: 999;
 }
 
 .dot {
@@ -157,19 +189,7 @@ button {
   transition: 0.3s;
 }
 
-.dot.active {
-  transform: scale(1.5);
-  background: white;
-}
-
-/* VIGNETTE */
-body::after {
-  content: '';
-  position: fixed;
-  inset: 0;
-  background: radial-gradient(circle, transparent 60%, rgba(0,0,0,0.4));
-  pointer-events: none;
-}
+.dot.active { transform: scale(1.5); background: white; }
 
 /* PARTICLES */
 .particle {
@@ -180,21 +200,11 @@ body::after {
   border-radius: 50%;
   opacity: 0.6;
   pointer-events: none;
-  z-index: 0;
+  z-index: 1;
   animation: floatUp linear infinite;
-  filter: blur(1px);
 }
 
-@keyframes floatUp {
-  from {
-    transform: translateY(100vh) scale(0.8);
-    opacity: 0;
-  }
-  to {
-    transform: translateY(-10vh) scale(1.2);
-    opacity: 1;
-  }
-}
+@keyframes floatUp { from { transform: translateY(100vh); opacity: 0; } to { transform: translateY(-10vh); opacity: 1; } }
 </style>
 </head>
 
@@ -202,25 +212,26 @@ body::after {
 
 <div id="opening"><h1>makasihh udahh buka:D</h1></div>
 
-<!-- PAGE 1 -->
 <div class="page active" id="page1" style="background-image:url('bg1.jpg')">
 <h1>buat kamu, aulia 🤍</h1>
-<img class="gif" src="gif1.gif">
-<img class="gif" src="gif2.gif">
-<br>
-<button onclick="goPage(3)">klik disini :D</button>
+<div style="display: flex; justify-content: center; gap: 15px; margin-bottom: 20px;">
+    <img class="gif" src="gif1.gif">
+    <img class="gif" src="gif2.gif">
+</div>
+<button onclick="goPage(2)">klik disini :D</button>
 </div>
 
-<!-- PAGE 2 -->
 <div class="page" id="page2" style="background-image:url('bg2.jpg')">
-<h1>sedikit cerita tentang kita</h1>
-
+<div class="story-box">
+  <h1>sedikit cerita tentang rauL</h1>
+  <p>dulu kita berdua cuma "temen" biasa yang saling yapping dan salah satunya ada yang baper karena itu AHAHHAHAHAHAHAA. teruss sehabis itu aku notice something di dalem diri kamu yg ngebuat aku ikutan suka sama kamu hehehe:p dannn sehabis ituu kitaa jadian dehh YEEEEEYYYY semoga kita bakal selalu kaya beigni yaa cantikkuu</p>
+</div>
 <button onclick="goPage(3)">klik disini :D</button>
 </div>
 
-<!-- PAGE 3 -->
 <div class="page" id="page3" style="background-image:url('bg3.jpg')">
 <h1>my fav pictures of you</h1>
+<p class="hint">coba pencet fotonya dehh hehe</p>
 <div class="gallery">
 <img src="foto1.jpg" onclick="openModal(this,'SUMPAH MAKE UP KAMU CANTIKKK BANGEETTT?? aku suka ini karena hari raya pertama kita + kamu cantik banget masyaAllah')">
 <img src="foto2.jpg" onclick="openModal(this,'HEHEHEHE CIEE CIEE JAKET PASKIB, ini demi cantik bgt gakuat. . . wink kamu itu lhooo sayaanggg buat aku melelelehhh:D')">
@@ -230,66 +241,52 @@ body::after {
 <img src="foto6.jpg" onclick="openModal(this,'INIII JUGAA KAYANYA ENGGA PERLU DI JELASIN??!?? di foto ini kamu bener bener definisi dari kata perfect.')">
 <img src="foto7.jpg" onclick="openModal(this,'AKUU GATAUU INII BERASA LUCUUU BGFBTBGBFBT, KEK AH UDAH APEE MANE UDAH CANTIK DITAMBAH LUCU PULA')">
 <img src="foto8.jpg" onclick="openModal(this,'hehehe you know laaa, foto ini bener bener aku bakal inget selama hubungan kita ini. . . first time kita jalan bareng berduaan ngebuat aku ngerasa gimana gitu.. makanya aku foto kamu sebagai dokumentasi')">
-<img src="foto9.jpg" onclick="openModal(this,'Alasan 9')">
+<img src="foto9.jpg" onclick="openModal(this,'INI JUGA CANTIKK ANETTT MASYA ALLAH, VIBESNYA KAYAA EROPA GITUUU SUKAAAAKKKKK')">
 </div>
-
 <button onclick="goPage(4)">klik disini :D</button>
 </div>
 
-<!-- PAGE 4 -->
-<div class="page" id="page4" style="background-image:url('bg4.jpg')">
+<div class="page" id="page4" style="background-image:url('bg1.jpg')">
 <h1>our pictures together</h1>
+<p class="hint">cobaaa pencet lagi fotonyaa dee :D</p>
 <div class="gallery">
 <img src="our1.jpg" onclick="openModal(this,'rangkulan pertama di hidupku:D bisa dibilang foto ini juga awal dari segalanyaakk')">
-<img src="our2.jpg" onclick="openModal(this,'Kenangan 2')">
-<img src="our3.jpg" onclick="openModal(this,'Kenangan 3')">
+<img src="our2.jpg" onclick="openModal(this,'momen dimana aku gabakal pernah lupa:) first banget jalan sama cewe walau ga berduaan, terus juga first naik transum. the greatest momen of my life:D')">
+<img src="our3.jpg" onclick="openModal(this,'AHAHAHAHAHA FIRST EVENT PASKIB KAMUU UHUHUHUUUYYYY, walauu banyakk likaa liku di hari itu butt aku seneng bgt bisa datengin event kamu walau pulangnya di omelin si hehe. TAPII SUMPAH DISINIII KAMU CANTIK BGT GA BOONG SYSJSGSJSHSHSHHS')">
 </div>
-
 <button onclick="goPage(5)">klik disini :D</button>
 </div>
 
-<!-- PAGE 5 -->
 <div class="page" id="page5" style="background-image:url('bg5.jpg')">
-<h1>pesan dari aku</h1>
-<h1> aku harap kita berdua selalu bareng bareng walau kesalahan pasti ada. aku engga nuntut kamu buat stay sama aku, tapi kalau aku ga sama kamu, aku sama siapa:( makasih sayang udah pilih aku dari banyaknya cowo yg suka sama kamu, i will do my best buat ngetreat kamu. loveu cantikku</h1>
+<div class="story-box">
+  <h1>pesan dari aku</h1>
+  <p>aku harap kita berdua selalu bareng bareng walau kesalahan pasti ada. aku engga nuntut kamu buat stay sama aku, tapi kalau aku ga sama kamu, aku sama siapa:( makasih sayang udah pilih aku dari banyaknya cowo yg suka sama kamu, i will do my best buat ngetreat kamu. loveu cantikku</p>
+</div>
 <button onclick="goPage(6)">klik disini :D</button>
 </div>
 
-<!-- PAGE 6 -->
 <div class="page" id="page6" style="background-image:url('bg6.jpg')">
-<h1>dibuat sama raka 🤍</h1>
-
+<h1>dibuat sama raka(kesayangan kamu) 🤍</h1>
+<p> semogaa kamu sukaa yeaahh, maap kalau ada yang kurang because aku baru balik lagi ngecoding coding :p</p>
 </div>
 
-<!-- MODAL -->
-<div class="modal" id="modal" onclick="closeModal()">
+<div id="modal" class="modal" onclick="closeModal()">
 <img id="modalImg">
 <p id="modalText"></p>
 </div>
 
-<!-- DOT -->
 <div id="dots">
-<div class="dot active"></div>
-<div class="dot"></div>
-<div class="dot"></div>
-<div class="dot"></div>
-<div class="dot"></div>
-<div class="dot"></div>
+<div class="dot active"></div><div class="dot"></div><div class="dot"></div>
+<div class="dot"></div><div class="dot"></div><div class="dot"></div>
 </div>
 
 <script>
 function goPage(page){
   let current = document.querySelector('.page.active');
   let next = document.getElementById('page'+page);
-
   if(current === next) return;
-
   current.classList.remove('active');
-
-  setTimeout(() => {
-    next.classList.add('active');
-  }, 100);
-
+  setTimeout(() => { next.classList.add('active'); }, 100);
   updateDots(page);
 }
 
@@ -305,79 +302,29 @@ function openModal(img,text){
   document.getElementById('modalText').innerText=text;
 }
 
-function closeModal(){
-  let modal = document.getElementById('modal');
-  let img = document.getElementById('modalImg');
+function closeModal(){ document.getElementById('modal').style.display='none'; }
 
-  modal.classList.add('hide');
-  img.classList.add('hide');
+setTimeout(()=>{ document.getElementById('opening').style.display='none'; },2500);
 
-  setTimeout(() => {
-    modal.style.display='none';
-    modal.classList.remove('hide');
-    img.classList.remove('hide');
-  }, 400);
-}
-
-setTimeout(()=>{
-  document.getElementById('opening').style.display='none';
-},2500);
-
-// PARTICLES
 function createParticles(){
-  for(let i=0;i<40;i++){
+  for(let i=0;i<30;i++){
     let p = document.createElement('div');
     p.classList.add('particle');
-
-    let colors = ['#fff','#ffb6c1','#ffd1dc'];
-    p.style.background = colors[Math.floor(Math.random()*colors.length)];
-
     p.style.left = Math.random() * 100 + 'vw';
     p.style.animationDuration = (4 + Math.random() * 6) + 's';
     p.style.width = p.style.height = (3 + Math.random() * 5) + 'px';
-    p.style.opacity = 0.3 + Math.random() * 0.7;
-
     document.body.appendChild(p);
   }
 }
-
 createParticles();
 </script>
 
-
-<!-- MUSIC -->
-<audio id="music" src="music.mp3" autoplay loop></audio>
-
-<!-- OPTIONAL MUSIC BUTTON -->
-<button onclick="toggleMusic()" style="position:fixed;bottom:20px;right:12px;z-index:999;border:none;border-radius:999px;padding:10px 12px;background:rgba(0,0,0,0.4);backdrop-filter:blur(6px);color:#fff;">🎵</button>
-
+<audio id="music" src="music.mp3" loop></audio>
 <script>
-// ensure autoplay works after first interaction
 document.addEventListener('click', () => {
   const m = document.getElementById('music');
-  if (m && m.paused) {
-    m.play().catch(()=>{});
-  }
-});
-
-function toggleMusic(){
-  const m = document.getElementById('music');
-  if(!m) return;
-  if(m.paused){ m.play().catch(()=>{}); }
-  else { m.pause(); }
-}
-
-// soft fade-in for music
-window.addEventListener('load', () => {
-  const m = document.getElementById('music');
-  if(!m) return;
-  m.volume = 0;
-  let v = 0;
-  const fade = setInterval(()=>{
-    if(v < 0.5){ v += 0.02; m.volume = v; }
-    else clearInterval(fade);
-  }, 200);
-});
+  if (m && m.paused) { m.play(); }
+}, {once: true});
 </script>
 
 </body>
